@@ -1,0 +1,6 @@
+{
+  "files.exclude": {
+    ".ackrc": true,
+    "**/.git": false
+  }
+}
