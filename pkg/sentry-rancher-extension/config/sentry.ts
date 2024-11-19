@@ -1,10 +1,13 @@
-import { createApp } from "vue";
+import { App, createApp } from "vue";
 import type { Router } from "vue-router";
 import * as Sentry from "@sentry/vue";
 
-export const sentryInit = (app: ReturnType<typeof createApp>, router: Router) => {
-  if (!app || !router) { return; }
+export const sentryInit = (vueApp: ReturnType<typeof createApp>, router: Router) => {
+  if (!vueApp || !router) { return; }
 
+  const app: App<Element> = createApp({});
+  app.config.errorHandler = vueApp.config.errorHandler;
+  
   Sentry.init({
     app,
     dsn: process.env.VUE_APP_SENTRY_DSN,
