@@ -1,0 +1,8 @@
+sentry:
+  edit:
+    title: Sentry configuration
+    dsn-label: Insert DSN
+    dsn-placeholder: e.g. https://yourorg@yourproject.example.sentry.io/id
+    target-label: Insert target URL
+    target-placeholder: e.g. https://yourwebsite.example.com
+    button: Save

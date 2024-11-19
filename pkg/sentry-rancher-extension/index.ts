@@ -1,6 +1,7 @@
 import { importTypes } from '@rancher/auto-import';
 import { IPlugin } from '@shell/core/types';
 import { sentryInit } from './config/sentry';
+import SentryEdit from './edit/ui.cattle.io.sentry.vue';
 
 // Init the package
 export default function(plugin: IPlugin, globals: any): void {
@@ -11,6 +12,14 @@ export default function(plugin: IPlugin, globals: any): void {
   plugin.metadata = require('./package.json');
 
   // Load a product
-  // plugin.addProduct(require('./product'));
   sentryInit(globals.vueApp, globals.store.$router);
+
+  // Load a product
+  plugin.addProduct(require('./product'));
+
+  plugin.addRoute({
+    name:      'sentry',
+    path:      '/c/local/explorer/ui.cattle.io.sentry',
+    component: SentryEdit
+  });
 }
