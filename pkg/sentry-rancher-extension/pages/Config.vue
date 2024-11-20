@@ -1,6 +1,6 @@
 <script>
 import { LabeledInput } from '@components/Form/LabeledInput';
-import { InstallView } from '../components/InstallView.vue';
+import InstallView from '../components/InstallView';
 import { mapState, mapActions } from 'vuex';
 
 export default {
@@ -14,27 +14,28 @@ export default {
     dsn: process.env.VUE_APP_SENTRY_DSN,
     target: process.env.VUE_APP_SENTRY_TARGET,
   },
+  computed: {
+    ...mapState('sentry', ['crd']),
+    ...mapActions('sentry', ['setConfig']),
+  },
   methods: {
     async onSave() {
-      await setConfig({
+      await this.setConfig({
         dsn: this.dsn,
         target: this.target,
       });
     }
   },
-  computed: {
-    ...mapState('sentry', ['crd', 'repo']),
-    ...mapActions('sentry', ['setConfig']),
-  },
 };
 
 </script>
 <template>
-  <InstallView />
+  <InstallView v-if="!crd" />
 
   <h1>{{ t('sentry.edit.title') }}</h1>
 
   <br>
+  
   <form @submit.prevent="onSave">
     <LabeledInput
       v-model:value="dsn"
@@ -59,5 +60,3 @@ export default {
   </form>
 </template>
 
-<style lang="scss" scoped>
-</style>

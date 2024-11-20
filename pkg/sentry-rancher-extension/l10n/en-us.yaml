@@ -6,3 +6,7 @@ sentry:
     target-label: Insert target URL
     target-placeholder: e.g. https://yourwebsite.example.com
     button: Save
+    crd-missing: Resource is not present, please install it first before configure Sentry.
+    crd-install: Install
+    crd-error: Error installing resource
+    repo-error: Error installing repo
