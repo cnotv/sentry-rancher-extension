@@ -13,7 +13,10 @@ export const sentryInit = (vueApp: ReturnType<typeof createApp>, router: Router)
     dsn: process.env.VUE_APP_SENTRY_DSN,
     integrations: [
       Sentry.browserTracingIntegration({ router }),
-      Sentry.replayIntegration(),
+      Sentry.replayIntegration({
+        unblock: [".sentry-unblock, [data-sentry-unblock]"],
+        unmask: [".sentry-unmask, [data-sentry-unmask]"],
+      })
     ],
 
     // Set tracesSampleRate to 1.0 to capture 100%
