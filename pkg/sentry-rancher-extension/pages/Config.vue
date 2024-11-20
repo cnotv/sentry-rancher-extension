@@ -1,7 +1,9 @@
 <script>
-import { LabeledInput } from '@components/Form/LabeledInput';
+import AsyncButton from '@shell/components/AsyncButton.vue';
+import LabeledInput from '@components/Form/LabeledInput/LabeledInput.vue';
 import InstallView from '../components/InstallView';
-import { mapState, mapActions } from 'vuex';
+import { mapState } from 'vuex';
+import { SENTRY_CONFIGURATION_TYPE } from '../types/sentry';
 
 export default {
   name: 'SentryConfig',
@@ -9,21 +11,55 @@ export default {
   components: {
     InstallView,
     LabeledInput,
+    AsyncButton,
   },
-  data: {
-    dsn: process.env.VUE_APP_SENTRY_DSN,
-    target: process.env.VUE_APP_SENTRY_TARGET,
+  inheritAttrs: false,
+  data() {
+    const { dsn, target } = this.$store.getters['sentry/config'];
+    return {
+      dsn,
+      target,
+    };
+  },
+  async fetch() {
+    const schema = this.$store.getters['management/schemaFor'](SENTRY_CONFIGURATION_TYPE);
+    // Set resource if missing
+    if (schema) {
+      await this.$store.dispatch('sentry/setCrd', true);
+    } else {
+      // Set existing settings if missing
+      const settings = await this.$store.dispatch('management/findAll', { type: SENTRY_CONFIGURATION_TYPE });
+      if (settings) {
+        const config = settings.find((setting) => (setting.metadata.name = 'sentry')).spec;
+        await this.$store.dispatch('sentry/setConfig', config);
+      }
+    }
   },
   computed: {
     ...mapState('sentry', ['crd']),
-    ...mapActions('sentry', ['setConfig']),
   },
   methods: {
-    async onSave() {
-      await this.setConfig({
+    async onSave(btnCb) {
+      const k8sConfig = {
+        metadata: { name: `sentry`, namespace: 'default' },
+        spec:     {},
+        type:     SENTRY_CONFIGURATION_TYPE,
+      };
+      const config = {
         dsn: this.dsn,
         target: this.target,
-      });
+      }
+      const settings = await this.$store.dispatch('management/findAll', { type: SENTRY_CONFIGURATION_TYPE });
+      const steveModel = settings ?
+        settings.find(setting => (setting.metadata.name = 'sentry')) :
+        await this.$store.dispatch('management/create', k8sConfig);
+
+      steveModel.spec = config
+      steveModel.save();
+
+      await this.$store.dispatch('sentry/setConfig', config);
+
+      btnCb(true);
     }
   },
 };
@@ -35,28 +71,25 @@ export default {
   <h1>{{ t('sentry.edit.title') }}</h1>
 
   <br>
-  
-  <form @submit.prevent="onSave">
-    <LabeledInput
-      v-model:value="dsn"
-      label-key="sentry.edit.dsn-label"
-      placeholder-key="sentry.edit.dsn-placeholder"
-      type="text"
-    />
 
-    <br>
+  <LabeledInput
+    v-model:value="dsn"
+    label-key="sentry.edit.dsn-label"
+    placeholder-key="sentry.edit.dsn-placeholder"
+    type="text"
+  />
 
-    <LabeledInput
-      v-model:value="target"
-      label-key="sentry.edit.dsn-label"
-      placeholder-key="sentry.edit.dsn-placeholder"
-      type="text"
-    />
+  <br>
 
-    <button
-      type="submit"
-      class="btn role-link"
-    >{{ t('sentry.edit.button') }}</button>
-  </form>
+  <LabeledInput
+    v-model:value="target"
+    label-key="sentry.edit.dsn-label"
+    placeholder-key="sentry.edit.dsn-placeholder"
+    type="text"
+  />
+
+  <br>
+
+  <AsyncButton @click="onSave">{{ t('sentry.edit.button') }}</AsyncButton>
 </template>
 

@@ -3,12 +3,13 @@
 // so that the developer can import it wherever it needs to be used
 export const PRODUCT_NAME = 'sentry';
 export const K8S_RESOURCE_NAME = 'configurations.sentry.rancher.io';
+export const SENTRY_CONFIGURATION_TYPE = 'sentry.rancher.io.configuration';
 export const CUSTOM_PAGE_NAME = 'config';
 export const BLANK_CLUSTER = '_';
 export const SENTRY_CRD = {
   apiVersion: 'apiextensions.k8s.io/v1',
   kind:       'CustomResourceDefinition',
-  metadata:   { name: 'configurations.sentry.rancher.io' },
+  metadata:   { name: K8S_RESOURCE_NAME },
   spec:       {
     group:    'sentry.rancher.io',
     versions: [
@@ -23,9 +24,8 @@ export const SENTRY_CRD = {
               spec: {
                 type:       'object',
                 properties: {
-                  url:          { type: 'string' },
-                  serviceToken: { type: 'string' },
-                  apiToken:     { type: 'string' },
+                  dsn:          { type: 'string' },
+                  target: { type: 'string' },
                 },
               },
             },

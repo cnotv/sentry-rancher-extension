@@ -8,13 +8,10 @@ export default {
   components: {
     Banner,
   },
+  inheritAttrs: false,
   computed: {
     ...mapState('sentry', ['crd']),
     ...mapActions('sentry', ['setCrd']),
-
-    missingCrd() {
-      return !this.crd;
-    },
   },
   methods: {
     handleGrowl(store, { type, message }) {
@@ -30,7 +27,7 @@ export default {
     },
 
     async installCrd() {
-      if (!this.missingCrd) {
+      if (!this.crd) {
         return;
       }
 
@@ -40,7 +37,7 @@ export default {
           method: 'POST',
           data:   SENTRY_CRD,
         });
-
+        
         await this.setCrd(true);
       } catch (err) {
         this.handleGrowl(this.$store, {

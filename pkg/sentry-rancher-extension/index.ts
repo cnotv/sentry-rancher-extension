@@ -1,5 +1,5 @@
 import { importTypes } from '@rancher/auto-import';
-import { IPlugin } from '@shell/core/types';
+import { IPlugin, OnNavToPackage } from '@shell/core/types';
 import { sentryInit } from './config/sentry';
 import extensionRouting from './routing/extension-routing';
 import store from './store';
