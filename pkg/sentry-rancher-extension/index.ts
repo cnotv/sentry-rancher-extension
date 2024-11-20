@@ -2,6 +2,7 @@ import { importTypes } from '@rancher/auto-import';
 import { IPlugin } from '@shell/core/types';
 import { sentryInit } from './config/sentry';
 import extensionRouting from './routing/extension-routing';
+import store from './store';
 
 // Init the package
 export default function(plugin: IPlugin, globals: any): void {
@@ -17,6 +18,12 @@ export default function(plugin: IPlugin, globals: any): void {
   // Load a product
   plugin.addProduct(require('./product'));
   
+  plugin.addDashboardStore(
+    store.config.namespace,
+    store.specifics,
+    store.config
+  );
+
   // Add Vue Routes
   plugin.addRoutes(extensionRouting);
 }
